@@ -3,12 +3,12 @@ from hashmap import ChainedHashMap
 
 class Board(object):
     def __init__(self):
-        self._board = ChainedHashMap(30)
+        self._board = ChainedHashMap(50)
         for i in range(24):
             self._board[i] = 'x'
         
         # Susedne tačke nam posle služe da vidimo da li je odigrani potez validan
-        self._adjacent_points = ChainedHashMap()
+        self._adjacent_points = ChainedHashMap(50)
         for i in range(24):
             self._adjacent_points[i] = None
         self.set_adjacent_points(self._adjacent_points)
@@ -59,5 +59,5 @@ class Board(object):
         | |   |   | |
         | {self._board[18]}---{self._board[19]}---{self._board[20]} |\t18, 19, 20
         |     |     |
-        {self._board[0]}-----{self._board[1]}-----{self._board[2]}\t21, 22, 23
+        {self._board[21]}-----{self._board[22]}-----{self._board[23]}\t21, 22, 23
         """

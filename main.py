@@ -1,5 +1,5 @@
-from board import Board
+from game import Game
 
 if __name__ == "__main__":
-    board = Board()
-    print(board)
+    g = Game()
+    g.play()
