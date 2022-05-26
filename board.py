@@ -6,6 +6,38 @@ class Board(object):
         self._board = ChainedHashMap(30)
         for i in range(24):
             self._board[i] = 'x'
+        
+        # Susedne tačke nam posle služe da vidimo da li je odigrani potez validan
+        self._adjacent_points = ChainedHashMap()
+        for i in range(24):
+            self._adjacent_points[i] = None
+        self.set_adjacent_points(self._adjacent_points)
+
+    def set_adjacent_points(self, points):
+        points[0] = (1, 9)
+        points[1] = (0, 4, 2)
+        points[2] = (1, 14)
+        points[3] = (4, 10)
+        points[4] = (1, 3, 5, 7)
+        points[5] = (4, 13)
+        points[6] = (7, 11)
+        points[7] = (4, 6, 8)
+        points[8] = (7, 12)
+        points[9] = (0, 10, 21)
+        points[10] = (3, 9, 11, 18)
+        points[11] = (6, 10, 15)
+        points[12] = (8, 13, 17)
+        points[13] = (5, 12, 14, 20)
+        points[14] = (2, 13, 23)
+        points[15] = (11, 16)
+        points[16] = (15, 17, 19)
+        points[17] = (12, 16)
+        points[18] = (10, 19)
+        points[19] = (16, 18, 20, 22)
+        points[20] = (13, 19)
+        points[21] = (9, 22)
+        points[22] = (19, 21, 23)
+        points[23] = (14, 22)
 
     def get_pos(self, coordinates):
         return self._board[coordinates]
