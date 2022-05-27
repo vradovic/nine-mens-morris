@@ -9,9 +9,9 @@ class Board(object):
         
         # Susedne tačke nam posle služe da vidimo da li je odigrani potez validan
         self._adjacent_points = ChainedHashMap(50)
-        self.set_adjacent_points(self._adjacent_points)
+        self._set_adjacent_points(self._adjacent_points)
 
-    def set_adjacent_points(self, points):
+    def _set_adjacent_points(self, points):
         points[0] = (1, 9)
         points[1] = (0, 4, 2)
         points[2] = (1, 14)
@@ -36,12 +36,11 @@ class Board(object):
         points[21] = (9, 22)
         points[22] = (19, 21, 23)
         points[23] = (14, 22)
-
-    def get_pos(self, coordinates):
-        return self._board[coordinates]
-
-    def set_pos(self, coordinates, piece):
-        self._board[coordinates] = piece
+    
+    def is_adjacent_point(self, start, end):
+        if end in self._adjacent_points[start]:
+            return True
+        return False
 
     def __str__(self):
         return f"""

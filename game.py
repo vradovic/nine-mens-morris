@@ -4,11 +4,13 @@ from tree import *
 class Game(object):
     def __init__(self):
         self._winner = None
-        self._tokens = '@#'
+        self.PLAYER_TOKEN = '@'
+        self.AI_TOKEN = '#'
         self._board = Board()
         self._phase = 1
         self._player_pieces = 9
         self._ai_pieces = 9
+        self._player_turn = 1 # 1 ako je igrac na potezu, -1 ako je protivnik na potezu
 
     def play(self):
         while self._winner is None:
@@ -22,25 +24,40 @@ class Game(object):
     def get_player_move(self):
         while True:
             try:
-                coordinates = int(input("Unesite vaš potez: "))
+                if self._phase == 1:
+                    start = None
+                    end = int(input("Unesite polje na koje želite da postavite figuru: "))
+                else:
+                    start = int(input("Unesite figuru koju želite da pomerite: "))
+                    end = int(input("Unesite poziciju na koju želite da je pomerite: "))
             except ValueError:
                 print("Unos mora biti broj.")
                 continue
-            if coordinates < 0 or coordinates > 23:
+            if start < 0 or start > 23 or end < 0 or end > 23:
                 print("Unos mora biti između 0 i 23.")
                 continue
-            return coordinates
+            return (start, end)
     
-    def is_valid_move(self, coordinates):
-        piece = self._board.get_pos(coordinates)
+    def is_valid_move(self, move):
+        start, end = move[0], move[1]
         if self._phase == 1:
-            if piece != 'x':
+            # U prvoj fazi validan je svaki potez dokle god polje nije zauzeto
+            if self._board[end] != 'x':
                 return False
-        return True
-    
-    def place_player_piece(self, coordinates):
-        if self.is_valid_move(coordinates):
-            self._board.set_pos(coordinates, '@')
-            self._player_pieces -= 1
+            return True
         else:
-            print("Ne možete tu postaviti figuru!")
+            # U drugoj fazi validan je potez ako polje nije zauzeto i ako je polje susedno od startnog polja
+            if self._board[end] != 'x' and self._board.is_adjacent_point(start, end) == False:
+                return False
+            return True
+
+    def make_move(self, move):
+        start, end = move[0], move[1]
+        if self.is_valid_move(move):
+            if self._player_turn == 1:
+                self._board[end] = self.PLAYER_TOKEN
+            else:
+                self._board[end] = self.AI_TOKEN
+            self._board[start] = 'x'
+            self._player_turn *= -1
+        print("Nije moguće odigrati ovaj potez!")
