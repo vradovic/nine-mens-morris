@@ -64,7 +64,11 @@ class Game(object):
             return True
         else:
             # U drugoj fazi validan je potez ako polje nije zauzeto i ako je polje susedno od startnog polja
-            if self._board.board_map[end] != 'x' and self._board.is_adjacent_point(start, end) == False:
+            if self._board.board_map[start] == 'x' or self._board.board_map[end] != 'x':
+                return False
+            elif (self._board.board_map[start] == self.PLAYER_TOKEN and self._player_turn != 1) or (self._board.board_map[start] == self.AI_TOKEN and self._player_turn == 1):
+                return False
+            elif self._board.is_adjacent_point(start, end) == False:
                 return False
             return True
 
