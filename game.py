@@ -14,27 +14,32 @@ class Game(object):
         self._ai_pieces = 0
         self._player_turn = 1 # 1 ako je igrac na potezu, -1 ako je protivnik na potezu
     
-    def display_board(self):
+    def display_board(self, last_move):
         print(self._board)
+        if last_move is not None:
+            if self._stage == 1:
+                print(f"Protivnik je odigrao na {last_move[1]}.")
+            else:
+                print(f"Protivnik je odigrao sa {last_move[0]} na {last_move[1]}.")
         print("Broj vaših figura:", self._player_pieces)
         print("Broj protivničkih figura:", self._ai_pieces)
 
     def play(self):
-        # TODO: Zapisivati odigrane poteze
+        last_move = None
         while self._winner is None:
-            self.display_board()
+            self.display_board(last_move)
             self.check_stage()
-            if self._player_turn == 1:
-                move = self.get_player_move()
-                if self.is_valid_move(move):
-                    self.make_move(move)
-                else:
-                    print("Neispravan potez!")
-            else:
-                move = self.get_ai_move()
-                while not self.is_valid_move(move):
-                    move = self.get_ai_move()
+            move = self.get_player_move()
+            if self.is_valid_move(move):
                 self.make_move(move)
+            else:
+                print("Neispravan potez!")
+                continue
+            move = self.get_ai_move()
+            while not self.is_valid_move(move):
+                move = self.get_ai_move()
+            self.make_move(move)
+            last_move = move
     
     def check_stage(self):
         if self._player_pieces == 9 and self._ai_pieces == 9:
