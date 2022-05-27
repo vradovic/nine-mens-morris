@@ -1,3 +1,4 @@
+from tracemalloc import start
 from board import Board
 from tree import *
 import random
@@ -19,20 +20,24 @@ class Game(object):
         print("Broj protivničkih figura:", self._ai_pieces)
 
     def play(self):
+        # TODO: Zapisivati odigrane poteze
         while self._winner is None:
             self.display_board()
             self.check_stage()
             if self._player_turn == 1:
                 move = self.get_player_move()
+                if self.is_valid_move(move):
+                    self.make_move(move)
+                else:
+                    print("Neispravan potez!")
             else:
                 move = self.get_ai_move()
-            if self.is_valid_move(move):
+                while not self.is_valid_move(move):
+                    move = self.get_ai_move()
                 self.make_move(move)
-            else:
-                print("Neispravan potez!")
     
     def check_stage(self):
-        if self._player_pieces == 9: # and self._ai_pieces == 9:
+        if self._player_pieces == 9 and self._ai_pieces == 9:
             self._stage = 2
     
     def get_player_move(self):
@@ -53,7 +58,10 @@ class Game(object):
             return (start, end)
     
     def get_ai_move(self):
-        pass
+        # TODO: Ovde implementirati heuristiku !!!
+        start = random.randint(0, 23)
+        end = random.randint(0, 23)
+        return (start, end)
     
     def is_valid_move(self, move):
         start, end = move[0], move[1]
@@ -84,4 +92,4 @@ class Game(object):
                 self._ai_pieces += 1
         if self._stage == 2:
             self._board.board_map[start] = 'x'
-        # self._player_turn *= -1
+        self._player_turn *= -1
