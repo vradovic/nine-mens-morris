@@ -2,6 +2,7 @@ from tracemalloc import start
 from board import Board
 from tree import *
 import random
+from copy import deepcopy
 
 class Game(object):
     def __init__(self):
@@ -98,3 +99,20 @@ class Game(object):
         if self._stage == 2:
             self._board.board_map[start] = 'x'
         self._player_turn *= -1
+    
+    # TODO: Napraviti minimax algoritam
+    def minimax(self, position, depth, maximizing):
+        pass
+
+    # Napravi stablo sa svim mogucim pozicijama
+    def create_game_tree(self, position):
+        position_copy = deepcopy(position)
+        root = TreeNode(position_copy)
+        for i in range(24):
+            if self._stage == 1:
+                if position_copy.board_map[i] == 'x':
+                    position_copy.board_map[i] == self.AI_TOKEN
+            else:
+                if position_copy.board_map[i] == self.AI_TOKEN:
+                    adj_points = position_copy.get_adjacent_points()
+                    
