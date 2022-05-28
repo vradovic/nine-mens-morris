@@ -32,15 +32,20 @@ class Game(object):
             self.check_stage()
             move = self.get_player_move()
             if self.is_valid_move(move):
-                self.make_move(move)
+                self._board.set_position(move, self.PLAYER_TOKEN)
             else:
                 print("Neispravan potez!")
                 continue
+            self._player_turn *= -1
             move = self.get_ai_move()
             while not self.is_valid_move(move):
                 move = self.get_ai_move()
-            self.make_move(move)
+            self._board.set_position(move, self.AI_TOKEN)
             last_move = move
+            self._player_turn *= -1
+            if self._stage == 1:
+                self._player_pieces += 1
+                self._ai_pieces += 1
     
     def check_stage(self):
         if self._player_pieces == 9 and self._ai_pieces == 9:
@@ -50,7 +55,7 @@ class Game(object):
         while True:
             try:
                 if self._stage == 1:
-                    start = 0
+                    start = None
                     end = int(input("Unesite polje na koje želite da postavite figuru: "))
                 else:
                     start = int(input("Unesite figuru koju želite da pomerite: "))
@@ -58,19 +63,26 @@ class Game(object):
             except ValueError:
                 print("Unos mora biti broj.")
                 continue
-            if start < 0 or start > 23 or end < 0 or end > 23:
+            if start is not None:
+                if start < 0 or start > 23 or end < 0 or end > 23:
+                    print("Unos mora biti između 0 i 23.")
+                    continue
+            elif end < 0 or end > 23:
                 print("Unos mora biti između 0 i 23.")
                 continue
             return (start, end)
     
     def get_ai_move(self):
         # TODO: Ovde implementirati heuristiku !!!
-        start = random.randint(0, 23)
+        start = None
+        if self._stage == 2:
+            start = random.randint(0, 23)
         end = random.randint(0, 23)
         return (start, end)
     
     def is_valid_move(self, move):
         start, end = move[0], move[1]
+
         if self._stage == 1:
             # U prvoj fazi validan je svaki potez dokle god polje nije zauzeto
             if self._board.board_map[end] != 'x':
@@ -85,34 +97,9 @@ class Game(object):
             elif self._board.is_adjacent_point(start, end) == False:
                 return False
             return True
-
-    def make_move(self, move):
-        start, end = move[0], move[1]
-        if self._player_turn == 1:
-            self._board.board_map[end] = self.PLAYER_TOKEN
-            if self._stage == 1:
-                self._player_pieces += 1
-        else:
-            self._board.board_map[end] = self.AI_TOKEN
-            if self._stage == 1:
-                self._ai_pieces += 1
-        if self._stage == 2:
-            self._board.board_map[start] = 'x'
-        self._player_turn *= -1
     
     # TODO: Napraviti minimax algoritam
     def minimax(self, position, depth, maximizing):
         pass
 
-    # Napravi stablo sa svim mogucim pozicijama
-    def create_game_tree(self, position):
-        position_copy = deepcopy(position)
-        root = TreeNode(position_copy)
-        for i in range(24):
-            if self._stage == 1:
-                if position_copy.board_map[i] == 'x':
-                    position_copy.board_map[i] == self.AI_TOKEN
-            else:
-                if position_copy.board_map[i] == self.AI_TOKEN:
-                    adj_points = position_copy.get_adjacent_points()
                     

@@ -3,9 +3,9 @@ from hashmap import ChainedHashMap
 
 class Board(object):
     def __init__(self):
-        self._board_map = ChainedHashMap(50)
+        self.board_map = ChainedHashMap(50)
         for i in range(24):
-            self._board_map[i] = 'x'
+            self.board_map[i] = 'x'
         
         # Susedne tačke nam posle služe da vidimo da li je odigrani potez validan
         self._adjacent_points = ChainedHashMap(50)
@@ -45,29 +45,27 @@ class Board(object):
             return True
         return False
     
-    # Vraca stanje table
-    def get_position(self):
-        return self._board_map.items()
-    
     # Menja stanje table
-    def set_position(self, start, end, token):
-        self._board_map[end] = token
+    def set_position(self, points, token):
+        start = points[0]
+        end = points[1]
+        self.board_map[end] = token
         if start is not None:
-            self._board_map[start] = 'x'
+            self.board_map[start] = 'x'
 
     def __str__(self):
         return f"""
-        {self._board_map[0]}-----{self._board_map[1]}-----{self._board_map[2]}\t0, 1, 2
+        {self.board_map[0]}-----{self.board_map[1]}-----{self.board_map[2]}\t0, 1, 2
         |     |     |
-        | {self._board_map[3]}---{self._board_map[4]}---{self._board_map[5]} |\t3, 4, 5
+        | {self.board_map[3]}---{self.board_map[4]}---{self.board_map[5]} |\t3, 4, 5
         | |   |   | |
-        | | {self._board_map[6]}-{self._board_map[7]}-{self._board_map[8]} | |\t6, 7, 8
+        | | {self.board_map[6]}-{self.board_map[7]}-{self.board_map[8]} | |\t6, 7, 8
         | | |   | | |
-        {self._board_map[9]}-{self._board_map[10]}-{self._board_map[11]}   {self._board_map[12]}-{self._board_map[13]}-{self._board_map[14]}\t9, 10, 11, 12, 13, 14
+        {self.board_map[9]}-{self.board_map[10]}-{self.board_map[11]}   {self.board_map[12]}-{self.board_map[13]}-{self.board_map[14]}\t9, 10, 11, 12, 13, 14
         | | |   | | |
-        | | {self._board_map[15]}-{self._board_map[16]}-{self._board_map[17]} | |\t15, 16, 17
+        | | {self.board_map[15]}-{self.board_map[16]}-{self.board_map[17]} | |\t15, 16, 17
         | |   |   | |
-        | {self._board_map[18]}---{self._board_map[19]}---{self._board_map[20]} |\t18, 19, 20
+        | {self.board_map[18]}---{self.board_map[19]}---{self.board_map[20]} |\t18, 19, 20
         |     |     |
-        {self._board_map[21]}-----{self._board_map[22]}-----{self._board_map[23]}\t21, 22, 23
+        {self.board_map[21]}-----{self.board_map[22]}-----{self.board_map[23]}\t21, 22, 23
         """
