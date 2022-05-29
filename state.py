@@ -97,6 +97,12 @@ class State(object):
         return False
     
     def is_end(self):
+        if self._max_pieces == 2:
+            return True, "min"
+        elif self._min_pieces == 2:
+            return True, "max"
+        else:
+            return False, None
 
 
     # Ispisivanje table
