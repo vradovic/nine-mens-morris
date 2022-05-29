@@ -25,22 +25,33 @@ class Game(object):
 
     def play(self):
         last_move = None
+
+        # Petlja igre
         while self._winner is None:
             self.display_board(last_move)
             self.check_stage()
+
+            # Igracev potez
             move = self.get_player_move()
             if self.is_valid_move(move):
                 self._board.set_position(move, self.PLAYER_TOKEN)
             else:
                 print("Neispravan potez!")
                 continue
+            if self.is_mill(move[1]):
+                self.remove_piece()
             self._player_turn *= -1
+
+            # AI potez
             move = self.get_ai_move()
             while not self.is_valid_move(move):
                 move = self.get_ai_move()
             self._board.set_position(move, self.AI_TOKEN)
             last_move = move
+            if self.is_mill(move[1]):
+                self.remove_piece()
             self._player_turn *= -1
+
             if self._stage == 1:
                 self._player_pieces += 1
                 self._ai_pieces += 1
@@ -96,11 +107,36 @@ class Game(object):
                 return False
             return True
     
-    def is_mill(self):
-        for points in self._board.mills:
-            if (points[0] == '@' and points[1] == '@' and points[2] == '@') or (points[0] == '#' and points[1] == '#' and points[2] == '#'):
+    def is_mill(self, point):
+        points = [x for x in self._board.mills if point in x]
+        for i in points:
+            if (self._board.board_map[i[0]] == '@' and self._board.board_map[i[1]] == '@' and self._board.board_map[i[2]] == '@' and self._player_turn == 1) or (self._board.board_map[i[0]] == '#' and self._board.board_map[i[1]] == '#' and self._board.board_map[i[2]] == '#' and self._player_turn != 1):
                 return True
         return False
+    
+    def remove_piece(self):
+        if self._player_turn == 1:
+            while True:
+                try:
+                    to_remove = int(input("Unesite polje sa kog želite da uklonite protivničku figuru: "))
+                except ValueError:
+                    print("Unos mora biti broj.")
+                    continue
+                if to_remove < 0 or to_remove > 23:
+                    print("Unos mora biti izmedju 0 i 23.")
+                    continue
+                elif self._board.board_map[to_remove] != self.AI_TOKEN:
+                    print("Možete ukloniti samo protivničku figuru.")
+                    continue
+                break
+        else:
+            while True:
+                to_remove = random.randint(0, 23)
+                if self._board.board_map[to_remove] != self.PLAYER_TOKEN:
+                    continue
+                break
+        
+        self._board.set_position((None, to_remove), 'x')
     
     # TODO: Napraviti minimax algoritam
     def minimax(self, position, depth, maximizing):
