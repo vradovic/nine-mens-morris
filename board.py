@@ -11,6 +11,29 @@ class Board(object):
         self._adjacent_points = ChainedHashMap(50)
         self._set_adjacent_points(self._adjacent_points)
 
+        self._mills = [
+            (0, 1, 2),
+            (0, 9, 21),
+            (21, 22, 23),
+            (2, 14, 23),
+            (3, 4, 5),
+            (3, 10, 18),
+            (18, 19, 20),
+            (5, 13, 20),
+            (6, 7, 8),
+            (6, 11, 15),
+            (15, 16, 17),
+            (8, 12, 17),
+            (1, 4, 7),
+            (9, 10, 11),
+            (16, 19, 22),
+            (12, 13, 14)
+        ]
+    
+    @property
+    def mills(self):
+        return self._mills
+
     def _set_adjacent_points(self, points):
         points[0] = (1, 9)
         points[1] = (0, 4, 2)

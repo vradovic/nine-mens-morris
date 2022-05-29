@@ -1,8 +1,6 @@
 from tracemalloc import start
 from board import Board
-from tree import *
 import random
-from copy import deepcopy
 
 class Game(object):
     def __init__(self):
@@ -97,6 +95,9 @@ class Game(object):
             elif self._board.is_adjacent_point(start, end) == False:
                 return False
             return True
+    
+    def is_mill(self):
+        pass
     
     # TODO: Napraviti minimax algoritam
     def minimax(self, position, depth, maximizing):
