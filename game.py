@@ -97,7 +97,10 @@ class Game(object):
             return True
     
     def is_mill(self):
-        pass
+        for points in self._board.mills:
+            if (points[0] == '@' and points[1] == '@' and points[2] == '@') or (points[0] == '#' and points[1] == '#' and points[2] == '#'):
+                return True
+        return False
     
     # TODO: Napraviti minimax algoritam
     def minimax(self, position, depth, maximizing):
