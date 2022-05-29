@@ -5,62 +5,34 @@ import random
 class Game(object):
     def __init__(self):
         self._winner = None
-        self.PLAYER_TOKEN = '@'
-        self.AI_TOKEN = '#'
+        self._PLAYER_TOKEN = '@'
+        self._AI_TOKEN = '#'
         self._board = Board()
         self._stage = 1 # faza igre, samo prva i druga
-        self._player_pieces = 0
-        self._ai_pieces = 0
-        self._player_turn = 1 # 1 ako je igrac na potezu, -1 ako je protivnik na potezu
-    
-    def display_board(self, last_move):
-        print(self._board)
-        if last_move is not None:
-            if self._stage == 1:
-                print(f"Protivnik je odigrao na {last_move[1]}.")
-            else:
-                print(f"Protivnik je odigrao sa {last_move[0]} na {last_move[1]}.")
-        print("Broj vaših figura:", self._player_pieces)
-        print("Broj protivničkih figura:", self._ai_pieces)
+        self._stage_counter = 0 # brojac faze, kad dodje do 9 prelazi u drugu fazu
+        self._player_pieces = 9
+        self._ai_pieces = 9
 
     def play(self):
-        last_move = None
-
-        # Petlja igre
+        
         while self._winner is None:
-            self.display_board(last_move)
-            self.check_stage()
-
-            # Igracev potez
-            move = self.get_player_move()
-            if self.is_valid_move(move):
-                self._board.set_position(move, self.PLAYER_TOKEN)
-            else:
-                print("Neispravan potez!")
+            
+            # Igrac
+            print(self._board)
+            move = self._get_player_move()
+            if not self._is_valid_move(move):
+                print("Potez nije ispravan.")
                 continue
-            if self.is_mill(move[1]):
-                self.remove_piece()
-            self._player_turn *= -1
+            self._board.set_position(move, self._PLAYER_TOKEN)
 
-            # AI potez
-            move = self.get_ai_move()
-            while not self.is_valid_move(move):
-                move = self.get_ai_move()
-            self._board.set_position(move, self.AI_TOKEN)
-            last_move = move
-            if self.is_mill(move[1]):
-                self.remove_piece()
-            self._player_turn *= -1
+            # AI
+            move = self._minimax(self._board.board_map, 10, False)
+            self._board.set_position(move, self._AI_TOKEN)
 
-            if self._stage == 1:
-                self._player_pieces += 1
-                self._ai_pieces += 1
-    
-    def check_stage(self):
-        if self._player_pieces == 9 and self._ai_pieces == 9:
-            self._stage = 2
-    
-    def get_player_move(self):
+            self._stage_counter += 1
+            self._update_stage()
+
+    def _get_player_move(self):
         while True:
             try:
                 if self._stage == 1:
@@ -81,15 +53,7 @@ class Game(object):
                 continue
             return (start, end)
     
-    def get_ai_move(self):
-        # TODO: Ovde implementirati heuristiku !!!
-        start = None
-        if self._stage == 2:
-            start = random.randint(0, 23)
-        end = random.randint(0, 23)
-        return (start, end)
-    
-    def is_valid_move(self, move):
+    def _is_valid_move(self, move, opposing):
         start, end = move[0], move[1]
 
         if self._stage == 1:
@@ -99,47 +63,32 @@ class Game(object):
             return True
         else:
             # U drugoj fazi validan je potez ako polje nije zauzeto i ako je polje susedno od startnog polja
-            if self._board.board_map[start] == 'x' or self._board.board_map[end] != 'x':
-                return False
-            elif (self._board.board_map[start] == self.PLAYER_TOKEN and self._player_turn != 1) or (self._board.board_map[start] == self.AI_TOKEN and self._player_turn == 1):
-                return False
-            elif self._board.is_adjacent_point(start, end) == False:
+            if self._board.board_map[start] == 'x' or self._board.board_map[end] != 'x' or self._board.board_map[start] == opposing or not self._board.is_adjacent_point(start, end):
                 return False
             return True
     
-    def is_mill(self, point):
+    def _is_mill(self, point, token):
         points = [x for x in self._board.mills if point in x]
         for i in points:
-            if (self._board.board_map[i[0]] == '@' and self._board.board_map[i[1]] == '@' and self._board.board_map[i[2]] == '@' and self._player_turn == 1) or (self._board.board_map[i[0]] == '#' and self._board.board_map[i[1]] == '#' and self._board.board_map[i[2]] == '#' and self._player_turn != 1):
+            if self._board.board_map[i[0]] == token and self._board.board_map[i[1]] == token and self._board.board_map[i[2]] == token:
                 return True
         return False
     
-    def remove_piece(self):
-        if self._player_turn == 1:
-            while True:
-                try:
-                    to_remove = int(input("Unesite polje sa kog želite da uklonite protivničku figuru: "))
-                except ValueError:
-                    print("Unos mora biti broj.")
-                    continue
-                if to_remove < 0 or to_remove > 23:
-                    print("Unos mora biti izmedju 0 i 23.")
-                    continue
-                elif self._board.board_map[to_remove] != self.AI_TOKEN:
-                    print("Možete ukloniti samo protivničku figuru.")
-                    continue
-                break
-        else:
-            while True:
-                to_remove = random.randint(0, 23)
-                if self._board.board_map[to_remove] != self.PLAYER_TOKEN:
-                    continue
-                break
-        
-        self._board.set_position((None, to_remove), 'x')
+    def _check_win(self):
+        if self._player_pieces == 2:
+            self._winner = "ai"
+            return True
+        elif self._ai_pieces == 2:
+            self._winner = "player"
+            return True
+        return False
+    
+    def _update_stage(self):
+        if self._stage_counter == 9:
+            self._stage = 2
     
     # TODO: Napraviti minimax algoritam
-    def minimax(self, position, depth, maximizing):
+    def _minimax(self, position, depth, maximizing):
         pass
 
                     
