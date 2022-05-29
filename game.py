@@ -12,30 +12,45 @@ class Game(object):
         self._stage_counter = 0 # brojac faze, kad dodje do 9 prelazi u drugu fazu
         self._player_pieces = 9
         self._ai_pieces = 9
+        self._DEPTH = 10
 
     def play(self):
         
         while self._winner is None:
-            
+
             # Igrac
             print(self._board)
-            move = self._get_player_move()
-            if not self._is_valid_move(move):
+            move = self._get_player_input()
+            if not self._is_valid_move(move, self._AI_TOKEN):
                 print("Potez nije ispravan.")
                 continue
             self._board.set_position(move, self._PLAYER_TOKEN)
+            if self._is_mill(move[1], self._PLAYER_TOKEN):
+                point = self._get_player_input(True, self._AI_TOKEN)
+                self._board.set_position(point, 'x')
+                self._ai_pieces -= 1
+            if self._is_win():
+                break
 
             # AI
-            move = self._minimax(self._board.board_map, 10, False)
+            move = self._minimax(self._board.board_map, self._DEPTH, False)
             self._board.set_position(move, self._AI_TOKEN)
+            if self._is_win():
+                break
 
             self._stage_counter += 1
             self._update_stage()
 
-    def _get_player_move(self):
+    def _get_player_input(self, mill=False, opposing=None):
         while True:
             try:
-                if self._stage == 1:
+                if mill:
+                    start = None
+                    end = int(input("Izaberite polje na kojem želite da uklonite protivničku figuru: "))
+                    if self._board.board_map[end] != opposing:
+                        print("Polje mora biti sa protivničkom figurom.")
+                        continue
+                elif self._stage == 1:
                     start = None
                     end = int(input("Unesite polje na koje želite da postavite figuru: "))
                 else:
@@ -74,7 +89,7 @@ class Game(object):
                 return True
         return False
     
-    def _check_win(self):
+    def _is_win(self):
         if self._player_pieces == 2:
             self._winner = "ai"
             return True
