@@ -78,6 +78,17 @@ class State(object):
     
     def get_mills(self):
         return self._mills
+    
+    # Proverava da li postoji mica u trenutnoj poziciji
+    # last_move - poslednje polje koje se promenilo
+    def is_mill(self, last_move):
+        mills = self.get_mills()
+        for mill in mills:
+            temp = [self._board[mill[0]], self._board[mill[1]], self._board[mill[2]]]
+            result = temp.count(temp[0]) == len(temp)
+            if result and (last_move in mill):
+                return True
+        return False
 
     # Ispisivanje table
     def __str__(self):
