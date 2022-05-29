@@ -31,6 +31,12 @@ class State(object):
             (12, 13, 14)
         ]
 
+        self._stage = 1 # Faza igre
+        self._max_pieces = 9 # Broj tokena maks igraca
+        self._min_pieces = 9 # Broj tokena min igraca
+        self._MAX_TOKEN = '1' # Token maks igraca
+        self._MIN_TOKEN = '2' # Token min igraca
+
     # Podesava susedne tacke
     def _set_adjacent_points(self):
         self._adjacent_points[0] = (1, 9)
@@ -89,6 +95,9 @@ class State(object):
             if result and (last_move in mill):
                 return True
         return False
+    
+    def is_end(self):
+
 
     # Ispisivanje table
     def __str__(self):
