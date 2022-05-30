@@ -32,6 +32,7 @@ class State(object):
         ]
 
         self._stage = 1 # Faza igre
+        self._stage_counter = 0 # brojac faze, na 9 igra prelazi u drugu fazu
         self._max_pieces = 9 # Broj tokena maks igraca
         self._min_pieces = 9 # Broj tokena min igraca
         self._MAX_TOKEN = '@' # Token maks igraca
@@ -110,7 +111,7 @@ class State(object):
         return self._max_pieces - self._min_pieces
     
     # Vraca sva moguca grananja trenutnog stanja
-    # token - igrac na kog se odnosi
+    # token - igrac na potezu
     def get_states(self, token):
         states = []
         if token == self._MAX_TOKEN:
@@ -122,6 +123,9 @@ class State(object):
                 if value == 'x':
                     new_state = deepcopy(self)
                     new_state.set_position(key, token)
+                    new_state._stage_counter += 1
+                    if new_state._stage_counter == 9:
+                        new_state._stage = 2
                     if new_state.is_mill(key):
                         for k, v in new_state._board.items():
                             if v == opposing:
