@@ -110,7 +110,6 @@ class State(object):
     def get_states(self, token):
         states = []
         if self._stage == 1:
-            # TODO: Get states when it's the first game stage.
             for key, value in self._board.items():
                 if value == 'x':
                     new_state = deepcopy(self)
