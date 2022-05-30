@@ -97,25 +97,33 @@ class State(object):
         return False
     
     def is_end(self):
-        if self._max_pieces == 2:
-            return True, "min"
-        elif self._min_pieces == 2:
-            return True, "max"
+        if self._max_pieces == 2 or self._min_pieces == 2:
+            return True
         else:
-            return False, None
+            return False
 
     def evaluate(self):
         return self._max_pieces - self._min_pieces
     
     def get_states(self, token):
         states = []
+        if token == '@':
+            opposing = '#'
+        else:
+            opposing = '@'
         if self._stage == 1:
             for key, value in self._board.items():
                 if value == 'x':
                     new_state = deepcopy(self)
                     new_state.set_position(new_state._board[key], token)
-                    # move = [None, key]
-                    states.append(new_state)
+                    if new_state.is_mill(new_state._board[key]):
+                        for k, v in new_state._board.items():
+                            if v == opposing:
+                                new_new_state = deepcopy(new_state)
+                                new_new_state.set_position(new_new_state._board[k], 'x')
+                                states.append(new_new_state)
+                    else:
+                        states.append(new_state)
         else:
             for key, value in self._board.items():
                 if value == token:
@@ -124,8 +132,14 @@ class State(object):
                             new_state = deepcopy(self)
                             new_state.set_position(new_state._board[adj_point], token)
                             new_state.set_position(new_state._board[key], 'x')
-                            # move = [key, adj_point]
-                            states.append(new_state)
+                            if new_state.is_mill(new_state._board[key]):
+                                for k, v in new_state._board.items():
+                                    if v == opposing:
+                                        new_new_state = deepcopy(new_state)
+                                        new_new_state.set_position(new_new_state._board[k], 'x')
+                                        states.append(new_new_state)
+                            else:
+                                states.append(new_state)
         return states
 
     # Ispisivanje table

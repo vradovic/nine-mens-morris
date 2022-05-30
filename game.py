@@ -5,8 +5,7 @@ class Game(object):
         self._state = State()
     
     def minimax(self, current_state, depth, max_player):
-        (is_end, winner) = current_state.is_end()
-        if depth == 0 or is_end:
+        if depth == 0 or current_state.is_end():
             return current_state.evaluate()
 
         if max_player:
