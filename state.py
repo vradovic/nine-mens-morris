@@ -114,8 +114,8 @@ class State(object):
                 if value == 'x':
                     new_state = deepcopy(self)
                     new_state.set_position(new_state._board[key], token)
-                    move = [None, key]
-                    states.append([new_state, move])
+                    # move = [None, key]
+                    states.append(new_state)
         else:
             for key, value in self._board.items():
                 if value == token:
@@ -124,8 +124,8 @@ class State(object):
                             new_state = deepcopy(self)
                             new_state.set_position(new_state._board[adj_point], token)
                             new_state.set_position(new_state._board[key], 'x')
-                            move = [key, adj_point]
-                            states.append([new_state, move])
+                            # move = [key, adj_point]
+                            states.append(new_state)
         return states
 
     # Ispisivanje table
