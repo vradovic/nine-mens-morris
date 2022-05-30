@@ -110,9 +110,18 @@ class State(object):
         return self._max_pieces - self._min_pieces
     
     # Vraca sva moguca grananja trenutnog stanja
-    # turn - igrac na potezu
-    def get_states(self, turn):
-        pass
+    # token - gledamo sve tokene onog igraca koji je na potezu
+    def get_states(self, token):
+        if self._stage == 1:
+            pass
+    
+    # Vraca listu pozicija sa prosledjenim tokenom
+    def get_all_tokens(self, token):
+        token_keys = []
+        for key, value in self._board.items():
+            if value == token:
+                token_keys.append(key)
+        return token_keys
 
     # Proverava da li je potez validan
     # move - potez koji se proverava
