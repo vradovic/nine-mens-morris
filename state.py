@@ -1,5 +1,5 @@
 from hashmap import ChainedHashMap
-
+from copy import deepcopy
 
 class State(object):
     def __init__(self):
@@ -106,6 +106,20 @@ class State(object):
 
     def evaluate(self):
         return self._max_pieces - self._min_pieces
+    
+    def get_states(self, token):
+        states = []
+        if self._stage == 1:
+            pass
+        else:
+            for key, value in self._board.items():
+                if value == token:
+                    for adj_point in self._adjacent_points[key]:
+                        if self._board[adj_point] == 'x':
+                            new_state = deepcopy(self)
+                            move = [key, adj_point]
+                            states.append([new_state, move])
+        return states
 
     # Ispisivanje table
     def __str__(self):
