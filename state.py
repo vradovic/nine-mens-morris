@@ -127,6 +127,16 @@ class State(object):
             if self._board[start_point] != token and self._board[end_point] != 'x':
                 return False
         return True
+    
+    # Simulacija poteza
+    # move - potez
+    # token - igracev token
+    def simulate_move(self, move, token):
+        if self.is_valid_move(move, token):
+            (start_point, end_point) = move
+            self.set_position(end_point, token)
+            if self._stage != 1:
+                self.set_position(start_point, 'x')
 
     # Ispisivanje table
     def __str__(self):
