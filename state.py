@@ -82,6 +82,7 @@ class State(object):
     def set_position(self, point, token):
         self._board[point] = token
     
+    # Vraca sve moguce mice
     def get_mills(self):
         return self._mills
     
@@ -96,15 +97,20 @@ class State(object):
                 return True
         return False
     
+    # Proverava da li je u trenutnoj poziciji kraj
     def is_end(self):
         if self._max_pieces == 2 or self._min_pieces == 2:
             return True
         else:
             return False
 
+    # HEURISTIKA
+    # Procenjuje trenutnu poziciju
     def evaluate(self):
         return self._max_pieces - self._min_pieces
     
+    # Vraca sva moguca grananja trenutnog stanja
+    # token - igrac na kog se odnosi
     def get_states(self, token):
         states = []
         if token == self._MAX_TOKEN:
