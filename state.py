@@ -102,8 +102,7 @@ class State(object):
     def is_end(self):
         if self._max_pieces == 2 or self._min_pieces == 2:
             return True
-        else:
-            return False
+        return False
 
     # HEURISTIKA
     # Procenjuje trenutnu poziciju
