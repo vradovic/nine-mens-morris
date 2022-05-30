@@ -111,9 +111,35 @@ class State(object):
     
     # Vraca sva moguca grananja trenutnog stanja
     # token - gledamo sve tokene onog igraca koji je na potezu
+    # enemy - protivnicki token
     def get_states(self, token):
+        states = []
+        if token == self._MAX_TOKEN:
+            enemy = self._MIN_TOKEN
+        else:
+            enemy = self._MAX_TOKEN
         if self._stage == 1:
-            pass
+            token_keys = self.get_all_tokens('x')
+            for key in token_keys:
+                move = (None, key)
+                new_state = self.create_new_state(move, token)
+                if new_state.is_mill(move[1]):
+                    for enemy_token in new_state.get_all_tokens(enemy):
+                        move = (None, enemy_token)
+                        new_new_state = new_state.create_new_state(move, 'x') # brisemo protivnicki token
+                        states.append(new_new_state)
+                else:
+                    states.append(new_state)
+        else:
+            token_keys = self.get_all_tokens(token)
+            # TODO: Implementirati kreiranje dece za drugu fazu
+    
+    def create_new_state(self, move, token):
+            if self.is_valid_move(move, token):
+                new_state = deepcopy(self)
+                new_state.simulate_move(move, token)
+                new_state.update_stage()
+                return new_state
     
     # Vraca listu pozicija sa prosledjenim tokenom
     def get_all_tokens(self, token):
@@ -141,11 +167,17 @@ class State(object):
     # move - potez
     # token - igracev token
     def simulate_move(self, move, token):
-        if self.is_valid_move(move, token):
-            (start_point, end_point) = move
-            self.set_position(end_point, token)
-            if self._stage != 1:
-                self.set_position(start_point, 'x')
+        (start_point, end_point) = move
+        self.set_position(end_point, token)
+        if start_point is not None:
+            self.set_position(start_point, 'x')
+    
+    # Azuira fazu igre
+    def update_stage(self):
+        if self._stage_counter == 9:
+            self._stage = 2
+        else:
+            self._stage_counter += 1
 
     # Ispisivanje table
     def __str__(self):
