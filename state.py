@@ -110,13 +110,21 @@ class State(object):
     def get_states(self, token):
         states = []
         if self._stage == 1:
-            pass
+            # TODO: Get states when it's the first game stage.
+            for key, value in self._board.items():
+                if value == 'x':
+                    new_state = deepcopy(self)
+                    new_state.set_position(new_state._board[key], token)
+                    move = [None, key]
+                    states.append([new_state, move])
         else:
             for key, value in self._board.items():
                 if value == token:
                     for adj_point in self._adjacent_points[key]:
                         if self._board[adj_point] == 'x':
                             new_state = deepcopy(self)
+                            new_state.set_position(new_state._board[adj_point], token)
+                            new_state.set_position(new_state._board[key], 'x')
                             move = [key, adj_point]
                             states.append([new_state, move])
         return states
