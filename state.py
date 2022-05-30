@@ -104,6 +104,8 @@ class State(object):
         else:
             return False, None
 
+    def evaluate(self):
+        return self._max_pieces - self._min_pieces
 
     # Ispisivanje table
     def __str__(self):
