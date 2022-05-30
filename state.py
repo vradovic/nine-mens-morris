@@ -111,54 +111,23 @@ class State(object):
         return self._max_pieces - self._min_pieces
     
     # Vraca sva moguca grananja trenutnog stanja
-    # token - igrac na potezu
-    def get_states(self, token):
-        states = []
-        if token == self._MAX_TOKEN:
-            opposing = self._MIN_TOKEN
-        else:
-            opposing = self._MAX_TOKEN
+    # turn - igrac na potezu
+    def get_states(self, turn):
+        pass
+
+    # Proverava da li je potez validan
+    # move - potez koji se proverava
+    # token - igracev token
+    def is_valid_move(self, move, token):
         if self._stage == 1:
-            for key, value in self._board.items():
-                if value == 'x':
-                    new_state = deepcopy(self)
-                    new_state.set_position(key, token)
-                    new_state._stage_counter += 1
-                    if new_state._stage_counter == 9:
-                        new_state._stage = 2
-                    if new_state.is_mill(key):
-                        for k, v in new_state._board.items():
-                            if v == opposing:
-                                new_new_state = deepcopy(new_state)
-                                new_new_state.set_position(k, 'x')
-                                if opposing == '@':
-                                    new_new_state._max_pieces -= 1
-                                else:
-                                    new_new_state._min_pieces -= 1
-                                states.append(new_new_state)
-                    else:
-                        states.append(new_state)
+            point = move[1] # (start_point, end_point)
+            if self._board[point] != 'x':
+                return False
         else:
-            for key, value in self._board.items():
-                if value == token:
-                    for adj_point in self._adjacent_points[key]:
-                        if self._board[adj_point] == 'x':
-                            new_state = deepcopy(self)
-                            new_state.set_position(adj_point, token)
-                            new_state.set_position(key, 'x')
-                            if new_state.is_mill(adj_point):
-                                for k, v in new_state._board.items():
-                                    if v == opposing:
-                                        new_new_state = deepcopy(new_state)
-                                        new_new_state.set_position(k, 'x')
-                                        if opposing == '@':
-                                            new_new_state._max_pieces -= 1
-                                        else:
-                                            new_new_state._min_pieces -= 1
-                                        states.append(new_new_state)
-                            else:
-                                states.append(new_state)
-        return states
+            (start_point, end_point) = move
+            if self._board[start_point] != token and self._board[end_point] != 'x':
+                return False
+        return True
 
     # Ispisivanje table
     def __str__(self):
