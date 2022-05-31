@@ -122,7 +122,10 @@ class State(object):
             token_keys = self.get_all_tokens('x')
             for key in token_keys:
                 move = (None, key)
-                new_state = self.create_new_state(move, token)
+                if self.is_valid_move(move, token):
+                    new_state = self.create_new_state(move, token)
+                else:
+                    continue
                 if new_state.is_mill(move[1]):
                     for enemy_token in new_state.get_all_tokens(enemy):
                         move = (None, enemy_token)
@@ -132,14 +135,27 @@ class State(object):
                     states.append(new_state)
         else:
             token_keys = self.get_all_tokens(token)
-            # TODO: Implementirati kreiranje dece za drugu fazu
+            for start_point in token_keys:
+                for end_point in self._adjacent_points[start_point]:
+                    move = (start_point, end_point)
+                    if self.is_valid_move(move, token):
+                        new_state = self.create_new_state(move, token)
+                    else:
+                        continue
+                    if new_state.is_mill(move[1]):
+                        for enemy_token in new_state.get_all_tokens(enemy):
+                            move = (None, enemy_token)
+                            new_new_state = new_state.create_new_state(move, 'x') # brisemo protivnicki token
+                            states.append(new_new_state)
+                    else:
+                        states.append(new_state)
+        return states
     
     def create_new_state(self, move, token):
-            if self.is_valid_move(move, token):
-                new_state = deepcopy(self)
-                new_state.simulate_move(move, token)
-                new_state.update_stage()
-                return new_state
+            new_state = deepcopy(self)
+            new_state.simulate_move(move, token)
+            new_state.update_stage()
+            return new_state
     
     # Vraca listu pozicija sa prosledjenim tokenom
     def get_all_tokens(self, token):
@@ -159,7 +175,7 @@ class State(object):
                 return False
         else:
             (start_point, end_point) = move
-            if self._board[start_point] != token and self._board[end_point] != 'x':
+            if self._board[start_point] != token or self._board[end_point] != 'x':
                 return False
         return True
     
