@@ -130,7 +130,10 @@ class State(object):
                     for enemy_token in new_state.get_all_tokens(enemy):
                         move = (None, enemy_token)
                         new_new_state = new_state.create_new_state(move, 'x') # brisemo protivnicki token
-                        new_new_state._stage_counter -= 1
+                        if token == '@':
+                            new_new_state._min_pieces -= 1
+                        else:
+                            new_new_state._max_pieces -= 1
                         states.append(new_new_state)
                 else:
                     states.append(new_state)
@@ -147,7 +150,10 @@ class State(object):
                         for enemy_token in new_state.get_all_tokens(enemy):
                             move = (None, enemy_token)
                             new_new_state = new_state.create_new_state(move, 'x') # brisemo protivnicki token
-                            new_new_state._stage_counter -= 1
+                            if token == '@':
+                                new_new_state._min_pieces -= 1
+                            else:
+                                new_new_state._max_pieces -= 1
                             states.append(new_new_state)
                     else:
                         states.append(new_state)
@@ -157,7 +163,6 @@ class State(object):
     def create_new_state(self, move, token):
             new_state = deepcopy(self)
             new_state.simulate_move(move, token)
-            new_state.update_stage()
             return new_state
     
     # Vraca listu pozicija sa prosledjenim tokenom
