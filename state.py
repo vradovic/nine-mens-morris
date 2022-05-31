@@ -130,6 +130,7 @@ class State(object):
                     for enemy_token in new_state.get_all_tokens(enemy):
                         move = (None, enemy_token)
                         new_new_state = new_state.create_new_state(move, 'x') # brisemo protivnicki token
+                        new_new_state._stage_counter -= 1
                         states.append(new_new_state)
                 else:
                     states.append(new_state)
@@ -146,11 +147,13 @@ class State(object):
                         for enemy_token in new_state.get_all_tokens(enemy):
                             move = (None, enemy_token)
                             new_new_state = new_state.create_new_state(move, 'x') # brisemo protivnicki token
+                            new_new_state._stage_counter -= 1
                             states.append(new_new_state)
                     else:
                         states.append(new_state)
         return states
     
+    # Kreira novo stanje igre
     def create_new_state(self, move, token):
             new_state = deepcopy(self)
             new_state.simulate_move(move, token)
@@ -193,6 +196,7 @@ class State(object):
         if self._stage_counter == 9:
             self._stage = 2
         else:
+            self._stage = 1
             self._stage_counter += 1
 
     # Ispisivanje table
