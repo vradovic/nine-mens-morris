@@ -4,12 +4,9 @@ from copy import deepcopy
 class Game(object):
     def __init__(self):
         self._current_state = State() # Trenutno stanje igre
-        self._player_turn = True # True - igrac na potezu, False - racunar na potezu
-        self._winner = None # Pobednik
         self._depth = 2 # Dubina na kojoj minimax pretrazuje pozicije
     
     # Minimax algoritam
-    # TODO: Implementirati alfa beta rez
     def minimax(self, current_state, depth, max_player):
         if current_state.is_end():
             if max_player:
@@ -41,13 +38,83 @@ class Game(object):
 
     # Glavna metoda igre
     def play(self):
-        for i in range(15):
-            best_move = self.minimax(self._current_state, self._depth, True)[1]
-            self._current_state = best_move
+        while True:
+            print(self._current_state)
+
+            last_move = self.get_player_input()
+            if self._current_state.is_mill(last_move):
+                while True:
+                    try:
+                        player_input = int(input("MICA! Izaberite protivnicko polje: "))
+                    except ValueError:
+                        print("Unos mora biti broj.")
+                    if player_input not in self._current_state.get_all_tokens('#'):
+                        print("Neispravno polje.")
+                        continue
+                    else:
+                        self._current_state.set_position(player_input, 'x')
+                        self._current_state._min_pieces -= 1
+                        break
+            if self._current_state.is_end():
+                print("Pobedili ste!")
+                break
+            no_moves = False
+            for i in self._current_state.get_all_tokens('@'):
+                adj_points = self._current_state._adjacent_points[i]
+                if 'x' in adj_points:
+                    no_moves = True
+                    break
+            if no_moves:
+                print("Izgubili ste! Nemate vise poteza.")
+                break
+
             best_move = self.minimax(self._current_state, self._depth, False)[1]
             self._current_state = best_move
-            print(self._current_state)
             self._current_state.update_stage()
-            print(self._current_state._stage_counter)
-            print(self._current_state._max_pieces)
-            print(self._current_state._min_pieces)
+
+            if self._current_state.is_end():
+                print("Protivnik je pobedio!")
+                break
+            no_moves = False
+            for i in self._current_state.get_all_tokens('@'):
+                adj_points = self._current_state._adjacent_points[i]
+                if 'x' in adj_points:
+                    no_moves = True
+                    break
+            if no_moves:
+                print("Pobedili ste! Protivnik nema vise poteza.")
+                break
+
+    def get_player_input(self):
+        if self._current_state._stage == 1:
+            while True:
+                try:
+                    player_input = int(input("Unesite broj polja: "))
+                except ValueError:
+                    print("Unos mora biti broj.")
+                    continue
+                move = (None, player_input)
+                if player_input < 0 or player_input > 23:
+                    print("Neispravan potez.")
+                elif not self._current_state.is_valid_move(move, '@'):
+                    print("Neispravan potez.")
+                else:
+                    self._current_state.simulate_move(move, '@')
+                    return player_input
+        else:
+            while True:
+                try:
+                    start = int(input("Izaberite polje: "))
+                    end = int(input("Unesite polje: "))
+                except ValueError:
+                    print("Unos mora biti broj.")
+                    continue
+                move = (start, end)
+                if start < 0 or end < 0 or start > 23 or end > 23:
+                    print("Neispravan potez.")
+                elif not self._current_state.is_valid_move(move, '@'):
+                    print("Neispravan potez.")
+                else:
+                    self._current_state.simulate_move(move, '@')
+                    return end
+                
