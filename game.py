@@ -20,27 +20,38 @@ class Game(object):
         if max_player:
             max_eval = float('-inf')
             best_move = None
+            pos = current_state
             for state in current_state.get_states('@'):
-                evaluation = self.minimax(state, depth - 1, False)[0]
+                evaluation = self.minimax(state[0], depth - 1, False)[0]
                 max_eval = max(max_eval, evaluation)
                 if max_eval == evaluation:
-                    best_move = state
-            return max_eval, best_move
+                    pos, best_move = state
+            return max_eval, pos, best_move
         else:
             min_eval = float('inf')
             best_move = None
+            pos = current_state
             for state in current_state.get_states('#'):
-                evaluation = self.minimax(state, depth - 1, True)[0]
+                evaluation = self.minimax(state[0], depth - 1, True)[0]
                 min_eval = min(min_eval, evaluation)
                 if min_eval == evaluation:
-                    best_move = state
-            return min_eval, best_move
+                    pos, best_move = state
+            return min_eval, pos, best_move
 
     # Glavna metoda igre
     def play(self):
         while True:
             print(self._current_state)
 
+            no_moves = False
+            for i in self._current_state.get_all_tokens('@'):
+                adj_points = self._current_state._adjacent_points[i]
+                if 'x' in adj_points:
+                    no_moves = True
+                    break
+            if no_moves:
+                print("Izgubili ste! Nemate vise poteza.")
+                break
             last_move = self.get_player_input()
             if self._current_state.is_mill(last_move):
                 while True:
@@ -58,23 +69,7 @@ class Game(object):
             if self._current_state.is_end():
                 print("Pobedili ste!")
                 break
-            no_moves = False
-            for i in self._current_state.get_all_tokens('@'):
-                adj_points = self._current_state._adjacent_points[i]
-                if 'x' in adj_points:
-                    no_moves = True
-                    break
-            if no_moves:
-                print("Izgubili ste! Nemate vise poteza.")
-                break
 
-            best_move = self.minimax(self._current_state, self._depth, False)[1]
-            self._current_state = best_move
-            self._current_state.update_stage()
-
-            if self._current_state.is_end():
-                print("Protivnik je pobedio!")
-                break
             no_moves = False
             for i in self._current_state.get_all_tokens('@'):
                 adj_points = self._current_state._adjacent_points[i]
@@ -83,6 +78,15 @@ class Game(object):
                     break
             if no_moves:
                 print("Pobedili ste! Protivnik nema vise poteza.")
+                break
+            evaluation, pos, best_move = self.minimax(self._current_state, self._depth, False)
+            self._current_state = pos
+            print("Protivnik je odigrao:", best_move)
+            print("Procena:", evaluation)
+            self._current_state.update_stage()
+
+            if self._current_state.is_end():
+                print("Protivnik je pobedio!")
                 break
 
     def get_player_input(self):

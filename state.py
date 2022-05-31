@@ -32,7 +32,7 @@ class State(object):
         ]
 
         self._stage = 1 # Faza igre
-        self._stage_counter = 0 # brojac faze, na 9 igra prelazi u drugu fazu
+        self._stage_counter = 1 # brojac faze, na 9 igra prelazi u drugu fazu
         self._max_pieces = 9 # Broj tokena maks igraca
         self._min_pieces = 9 # Broj tokena min igraca
         self._MAX_TOKEN = '@' # Token maks igraca
@@ -98,6 +98,15 @@ class State(object):
                 return True
         return False
     
+    def is_next_mill(self, token, n):
+        mills = self.get_mills()
+        for mill in mills:
+            temp = [self._board[mill[0]], self._board[mill[1]], self._board[mill[2]]]
+            result = temp.count(token) == n
+            if result:
+                return True
+        return False
+    
     # Proverava da li je u trenutnoj poziciji kraj
     def is_end(self):
         if self._max_pieces == 2 or self._min_pieces == 2:
@@ -107,8 +116,18 @@ class State(object):
     # HEURISTIKA
     # Procenjuje trenutnu poziciju
     def evaluate(self):
-        return self._max_pieces - self._min_pieces
-    
+        evaluation = 0
+        if self.is_next_mill(self._MAX_TOKEN, 2):
+            evaluation += 1
+        if self.is_next_mill(self._MAX_TOKEN, 3):
+            evaluation += 1
+        if self.is_next_mill(self._MIN_TOKEN, 2):
+            evaluation -= 1
+        if self.is_next_mill(self._MIN_TOKEN, 3):
+            evaluation -= 1
+        evaluation += self._max_pieces - self._min_pieces
+        return evaluation
+
     # Vraca sva moguca grananja trenutnog stanja
     # token - gledamo sve tokene onog igraca koji je na potezu
     # enemy - protivnicki token
@@ -128,15 +147,15 @@ class State(object):
                     continue
                 if new_state.is_mill(move[1]):
                     for enemy_token in new_state.get_all_tokens(enemy):
-                        move = (None, enemy_token)
-                        new_new_state = new_state.create_new_state(move, 'x') # brisemo protivnicki token
+                        take = (None, enemy_token)
+                        new_new_state = new_state.create_new_state(take, 'x') # brisemo protivnicki token
                         if token == '@':
                             new_new_state._min_pieces -= 1
                         else:
                             new_new_state._max_pieces -= 1
-                        states.append(new_new_state)
+                        states.append((new_new_state, move))
                 else:
-                    states.append(new_state)
+                    states.append((new_state, move))
         else:
             token_keys = self.get_all_tokens(token)
             for start_point in token_keys:
@@ -148,15 +167,15 @@ class State(object):
                         continue
                     if new_state.is_mill(move[1]):
                         for enemy_token in new_state.get_all_tokens(enemy):
-                            move = (None, enemy_token)
-                            new_new_state = new_state.create_new_state(move, 'x') # brisemo protivnicki token
+                            take = (None, enemy_token)
+                            new_new_state = new_state.create_new_state(take, 'x') # brisemo protivnicki token
                             if token == '@':
                                 new_new_state._min_pieces -= 1
                             else:
                                 new_new_state._max_pieces -= 1
-                            states.append(new_new_state)
+                            states.append((new_new_state, move))
                     else:
-                        states.append(new_state)
+                        states.append((new_state, move))
         return states
     
     # Kreira novo stanje igre
