@@ -83,6 +83,8 @@ class Game(object):
             self._current_state = pos
             print("Protivnik je odigrao:", best_move)
             print("Procena:", evaluation)
+            if self._current_state.is_mill(best_move):
+                print("MICA! Protivnik vam je uzeo figuru.")
             self._current_state.update_stage()
 
             if self._current_state.is_end():
