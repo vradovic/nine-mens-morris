@@ -7,7 +7,7 @@ class State(object):
         for i in range(24):
             self._board[i] = 'x'
         
-        # Susedne tačke nam posle služe da vidimo da li je odigrani potez validan
+        # Susedne tacke nam posle sluze da vidimo da li je odigrani potez validan
         self._adjacent_points = ChainedHashMap(50)
         self._set_adjacent_points()
 

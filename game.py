@@ -67,7 +67,7 @@ class Game(object):
             
             self._current_state.update_stage()
         
-        print(f"Pobedio je igrač sa {self._winner} tokenom!")
+        print(f"Pobedio je igrac sa {self._winner} tokenom!")
 
     def get_player_move(self):
         if self._current_state._stage == 1:
@@ -75,7 +75,7 @@ class Game(object):
             while True:
                 try:
                     end_point = int(
-                        input("Unesite polje na koje želite da postavite figuru: "))
+                        input("Unesite polje na koje zelite da postavite figuru: "))
                 except ValueError:
                     print("Unos mora biti broj.")
                     continue
@@ -91,7 +91,7 @@ class Game(object):
                 try:
                     start_point = int(input("Izaberite figuru: "))
                     end_point = int(
-                        input("Unesite polje gde želite da pomerite figuru: "))
+                        input("Unesite polje gde zelite da pomerite figuru: "))
                 except ValueError:
                     print("Unos mora biti broj.")
                     continue
@@ -108,12 +108,12 @@ class Game(object):
         while True:
             try:
                 point = int(
-                    input("Unesite broj polja sa kog želite da uklonite protivničku figuru: "))
+                    input("Unesite broj polja sa kog zelite da uklonite protivnicku figuru: "))
             except ValueError:
                 print("Unos mora biti broj.")
                 continue
             if point not in enemy_points:
-                print("Morate izabrati polje sa protivničkom figurom.")
+                print("Morate izabrati polje sa protivnickom figurom.")
                 continue
             break
         self._current_state.set_position(point, 'x')
